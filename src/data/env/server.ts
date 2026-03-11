@@ -9,6 +9,7 @@ export const env = createEnv({
     DB_NAME: z.string().min(1),
     DB_HOST: z.string().min(1),
     DB_PORT: z.coerce.number().int().min(1).default(5432),
+    CLERK_SECRET_KEY: z.string().min(1),
   },
 
   experimental__runtimeEnv: process.env,
