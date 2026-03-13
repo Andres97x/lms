@@ -26,3 +26,5 @@ export const usersRelationships = relations(usersTable, ({ many }) => ({
   purchases: many(purchasesTable),
   usersLessonsCompleted: many(usersLessonsCompletedTable),
 }))
+
+export type Users = typeof usersTable.$inferInsert

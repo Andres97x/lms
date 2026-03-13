@@ -10,6 +10,7 @@ export const env = createEnv({
     DB_HOST: z.string().min(1),
     DB_PORT: z.coerce.number().int().min(1).default(5432),
     CLERK_SECRET_KEY: z.string().min(1),
+    CLERK_WEBHOOK_SIGNING_SECRET: z.string().min(1),
   },
 
   experimental__runtimeEnv: process.env,
