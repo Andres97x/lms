@@ -6,11 +6,10 @@ import { NextRequest } from "next/server"
 export async function POST(req: NextRequest) {
   try {
     const event = await verifyWebhook(req)
-
     const clerkUserId = event.data.id
-    const eventType = event.type
+    console.log(`EVENT FROM CLERK: ${event.type}`)
 
-    if (eventType === "user.created" || eventType === "user.updated") {
+    if (event.type === "user.created" || event.type === "user.updated") {
       const email = event.data.email_addresses.find(
         (email) => email.id === event.data.primary_email_address_id,
       )?.email_address
@@ -21,7 +20,7 @@ export async function POST(req: NextRequest) {
       if (email === null) return new Response("No email", { status: 400 })
       if (name === "") return new Response("No name", { status: 400 })
 
-      if (eventType === "user.created") {
+      if (event.type === "user.created") {
         const newUser = await insertUser({
           clerkUserId,
           email,
@@ -32,12 +31,12 @@ export async function POST(req: NextRequest) {
 
         await syncClerkUserMetadata({
           clerkUserId,
-          dbId: newUser?.id,
-          role: newUser?.role,
+          dbId: newUser.id,
+          role: newUser.role,
         })
       }
 
-      if (eventType === "user.updated") {
+      if (event.type === "user.updated") {
         await updateUser(
           { clerkUserId },
           {
@@ -50,7 +49,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    if (eventType === "user.deleted" && clerkUserId != null) {
+    if (event.type === "user.deleted" && clerkUserId != null) {
       await deleteUser({ clerkUserId })
     }
 

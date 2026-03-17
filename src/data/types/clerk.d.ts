@@ -1,6 +1,6 @@
 import { UserRoles } from "@/drizzle/schema"
 
-// export {}
+export {}
 
 declare global {
   interface CustomJwtSessionClaims {
