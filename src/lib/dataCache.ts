@@ -1,4 +1,4 @@
-type CACHE_TAG = "products" | "users"
+type CACHE_TAG = "products" | "users" | "courses"
 
 // for global tags
 export function getGlobalTag(tag: CACHE_TAG) {

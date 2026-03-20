@@ -4,7 +4,7 @@ import { coursesTable } from "./courses"
 import { createdAt, updatedAt } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
 
-export const usersCoursesTable = pgTable(
+export const usersCoursesAccess = pgTable(
   "users_courses",
   {
     userId: uuid("user_id")
@@ -20,14 +20,14 @@ export const usersCoursesTable = pgTable(
 )
 
 export const usersCoursesRelationships = relations(
-  usersCoursesTable,
+  usersCoursesAccess,
   ({ one }) => ({
     user: one(usersTable, {
-      fields: [usersCoursesTable.userId],
+      fields: [usersCoursesAccess.userId],
       references: [usersTable.id],
     }),
     course: one(coursesTable, {
-      fields: [usersCoursesTable.courseId],
+      fields: [usersCoursesAccess.courseId],
       references: [coursesTable.id],
     }),
   }),

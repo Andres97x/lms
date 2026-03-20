@@ -21,7 +21,7 @@ function Navbar() {
     <header className="flex h-12 shadow bg-background z-10">
       <nav className="flex gap-4 container">
         <Link
-          className="flex items-center mr-auto text-lg px-2 hover:underline"
+          className="flex items-center mr-auto text-lg hover:underline"
           href="/"
         >
           BIM

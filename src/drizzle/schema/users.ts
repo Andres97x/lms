@@ -1,7 +1,7 @@
 import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 import { createdAt, id, updatedAt } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
-import { usersCoursesTable } from "./usersCoursesAccess"
+import { usersCoursesAccess } from "./usersCoursesAccess"
 import { purchasesTable } from "./purchases"
 import { usersLessonsCompletedTable } from "./usersLessonsCompleted"
 
@@ -22,7 +22,7 @@ export const usersTable = pgTable("users", {
 })
 
 export const usersRelationships = relations(usersTable, ({ many }) => ({
-  usersCourses: many(usersCoursesTable),
+  usersCourses: many(usersCoursesAccess),
   purchases: many(purchasesTable),
   usersLessonsCompleted: many(usersLessonsCompletedTable),
 }))

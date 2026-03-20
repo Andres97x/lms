@@ -3,7 +3,7 @@ import { pgTable, text } from "drizzle-orm/pg-core"
 import { createdAt, id, updatedAt } from "../schemaHelpers"
 import { coursesProductsTable } from "./coursesProducts"
 import { courseSectionsTable } from "./courseSections"
-import { usersCoursesTable } from "./usersCoursesAccess"
+import { usersCoursesAccess } from "./usersCoursesAccess"
 
 export const coursesTable = pgTable("courses", {
   id,
@@ -16,5 +16,7 @@ export const coursesTable = pgTable("courses", {
 export const coursesRelationships = relations(coursesTable, ({ many }) => ({
   coursesProducts: many(coursesProductsTable),
   courseSections: many(courseSectionsTable),
-  usersCourses: many(usersCoursesTable),
+  usersCourses: many(usersCoursesAccess),
 }))
+
+export type Courses = typeof coursesTable.$inferInsert
