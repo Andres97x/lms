@@ -4,11 +4,17 @@ import z from "zod"
 import { courseSchema } from "../schemas/courses"
 import { getCurrentUser } from "@/services/clerk"
 import { redirect } from "next/navigation"
-import { canCreateCourse, canDeleteCourse } from "../permissions/courses"
+import {
+  canCreateCourse,
+  canDeleteCourse,
+  canUpdateCourse,
+} from "../permissions/courses"
 import { insertCourse } from "../db/courses"
-import { revalidateCoursesCache } from "../db/cache"
-import { deleteCourse as deleteDBCourse } from "../db/courses"
-import { revalidatePath } from "next/cache"
+import { revalidateCoursesCache } from "../db/cache/courses"
+import {
+  deleteCourse as deleteDBCourse,
+  updateCourse as updateCourseDB,
+} from "../db/courses"
 
 export async function createCourse(unsafeData: z.infer<typeof courseSchema>) {
   let courseId
@@ -28,7 +34,7 @@ export async function createCourse(unsafeData: z.infer<typeof courseSchema>) {
 
     revalidateCoursesCache(course.id)
     courseId = course.id
-    // return { success: true, course }
+    // return { error: false, course }
   } catch (err) {
     console.log(err)
 
@@ -54,7 +60,34 @@ export async function deleteCourse(id: string) {
 
   revalidateCoursesCache(id)
   return {
-    success: true,
+    error: false,
     message: `Course ${deletedCourse.name} has been deleted`,
+  }
+}
+
+export async function updateCourse(
+  id: string,
+  unsafeData: z.infer<typeof courseSchema>,
+) {
+  const user = await getCurrentUser()
+  const { success, data } = courseSchema.safeParse(unsafeData)
+  if (!success || !user || !canUpdateCourse(user))
+    return {
+      error: true,
+      message: "There was an error updating the course",
+    }
+
+  const updatedCourse = await updateCourseDB(id, data)
+
+  if (!updatedCourse)
+    return {
+      error: true,
+      message: "There was an error updating the course",
+    }
+
+  revalidateCoursesCache(updatedCourse.id)
+  return {
+    error: false,
+    message: `Course ${updatedCourse.name} has been updated`,
   }
 }

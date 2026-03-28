@@ -1,6 +1,6 @@
 import { db } from "@/drizzle/db"
 import { UserRoles, usersTable } from "@/drizzle/schema"
-import { getUserIdTag } from "@/features/users/db/cache"
+import { getUserIdTag } from "@/features/users/db/cache/users"
 import { auth, clerkClient } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm"
 import { cacheTag } from "next/cache"

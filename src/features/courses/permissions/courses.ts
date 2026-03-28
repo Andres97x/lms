@@ -7,3 +7,7 @@ export function canCreateCourse({ role }: { role: UserRoles | undefined }) {
 export function canDeleteCourse({ role }: { role: UserRoles | undefined }) {
   return role === "admin"
 }
+
+export function canUpdateCourse({ role }: { role: UserRoles | undefined }) {
+  return role === "admin"
+}

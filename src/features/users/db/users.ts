@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db"
 import { Users, usersTable } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
-import { revalidateUserCache } from "./cache"
+import { revalidateUserCache } from "./cache/users"
 
 export async function insertUser(data: Users) {
   const [newUser] = await db

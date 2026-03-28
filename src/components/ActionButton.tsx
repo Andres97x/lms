@@ -5,14 +5,24 @@ import { Button } from "./ui/button"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { AlertDialog, AlertDialogTrigger } from "./ui/alert-dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog"
 
 export function ActionButton({
   action,
   requireAreYouSure = false,
   ...props
 }: Omit<ComponentProps<typeof Button>, "onClick"> & {
-  action: () => Promise<{ error?: boolean; success?: boolean; message: string }>
+  action: () => Promise<{ error?: boolean; message: string }>
   requireAreYouSure?: boolean
 }) {
   const [isPending, startTransition] = useTransition()
@@ -30,7 +40,29 @@ export function ActionButton({
     })
   }
 
-  // if (requireAreYouSure())
+  if (requireAreYouSure) {
+    return (
+      <AlertDialog open={isPending ? true : undefined}>
+        <AlertDialogTrigger asChild>
+          <Button {...props} />
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={isPending} onClick={performAction}>
+              <LoadingTextSwap isLoading={isPending}>Yes</LoadingTextSwap>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
 
   return (
     <div>

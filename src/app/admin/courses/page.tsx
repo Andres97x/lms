@@ -3,7 +3,7 @@ import PageHeader from "@/components/PageHeader"
 import Link from "next/link"
 import { CoursesTable } from "@/features/courses/components/CoursesTable"
 import { cacheTag } from "next/cache"
-import { getCoursesGlobalTag } from "@/features/courses/db/cache"
+import { getCoursesGlobalTag } from "@/features/courses/db/cache/courses"
 import { db } from "@/drizzle/db"
 import {
   courseSectionsTable,
@@ -11,7 +11,9 @@ import {
   lessonsTable,
   usersCoursesAccess,
 } from "@/drizzle/schema"
-import { asc, count, countDistinct, eq, sql } from "drizzle-orm"
+import { asc, count, eq, sql } from "drizzle-orm"
+import { getUsersCoursesAccessGlobalTag } from "@/features/usersCourses/db/cache/usersCoursesAccess"
+import { getCourseSectionsGlobalTag } from "@/features/courseSections/db/cache/courseSections"
 
 export default async function CoursesPages() {
   const courses = await getCourses()
@@ -30,7 +32,11 @@ export default async function CoursesPages() {
 
 async function getCourses() {
   "use cache"
-  cacheTag(getCoursesGlobalTag())
+  cacheTag(
+    getCoursesGlobalTag(),
+    getCourseSectionsGlobalTag(),
+    getUsersCoursesAccessGlobalTag(),
+  )
 
   const sectionsCountSq = db
     .select({
@@ -51,7 +57,7 @@ async function getCourses() {
       courseSectionsTable,
       eq(courseSectionsTable.id, lessonsTable.sectionId),
     )
-    .groupBy(courseSectionsTable.id)
+    .groupBy(courseSectionsTable.courseId)
     .as("lessons_count_sq")
 
   const studentsCountSq = db
@@ -75,7 +81,7 @@ async function getCourses() {
     .leftJoin(sectionsCountSq, eq(sectionsCountSq.courseId, coursesTable.id))
     .leftJoin(lessonsCountSq, eq(lessonsCountSq.courseId, coursesTable.id))
     .leftJoin(studentsCountSq, eq(studentsCountSq.courseId, coursesTable.id))
-    .orderBy(coursesTable.name)
+    .orderBy(asc(coursesTable.name))
 }
 
 // heavy query

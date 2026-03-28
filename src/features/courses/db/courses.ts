@@ -16,3 +16,13 @@ export async function deleteCourse(id: string) {
 
   return deletedCourse
 }
+
+export async function updateCourse(id: string, values: Partial<Courses>) {
+  const [updatedCourse] = await db
+    .update(coursesTable)
+    .set(values)
+    .where(eq(coursesTable.id, id))
+    .returning()
+
+  return updatedCourse
+}

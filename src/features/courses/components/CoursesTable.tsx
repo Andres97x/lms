@@ -65,6 +65,7 @@ export function CoursesTable({ courses }: CoursesTableProps) {
                   <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
                 </Button>
                 <ActionButton
+                  requireAreYouSure
                   variant="destructive"
                   action={deleteCourse.bind(null, course.id)}
                 >
