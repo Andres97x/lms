@@ -8,15 +8,6 @@ export async function insertCourse(values: Courses) {
   return newCourse
 }
 
-export async function deleteCourse(id: string) {
-  const [deletedCourse] = await db
-    .delete(coursesTable)
-    .where(eq(coursesTable.id, id))
-    .returning()
-
-  return deletedCourse
-}
-
 export async function updateCourse(id: string, values: Partial<Courses>) {
   const [updatedCourse] = await db
     .update(coursesTable)
@@ -25,4 +16,13 @@ export async function updateCourse(id: string, values: Partial<Courses>) {
     .returning()
 
   return updatedCourse
+}
+
+export async function deleteCourse(id: string) {
+  const [deletedCourse] = await db
+    .delete(coursesTable)
+    .where(eq(coursesTable.id, id))
+    .returning()
+
+  return deletedCourse
 }

@@ -1,4 +1,8 @@
+import { ActionButton } from "@/components/ActionButton"
 import PageHeader from "@/components/PageHeader"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { db } from "@/drizzle/db"
 import {
@@ -8,9 +12,13 @@ import {
 } from "@/drizzle/schema"
 import CourseForm from "@/features/courses/components/CourseForm"
 import { getCourseIdTag } from "@/features/courses/db/cache/courses"
+import { deleteSection } from "@/features/courseSections/actions/courseSections"
+import SectionFormDialog from "@/features/courseSections/components/SectionFormDialog"
 import { getCourseSectionsCourseTag } from "@/features/courseSections/db/cache/courseSections"
 import { getLessonsCourseTag } from "@/features/lessons/db/cache/lessons"
+import { cn } from "@/lib/utils"
 import { asc, eq } from "drizzle-orm"
+import { EyeClosedIcon, EyeIcon, PlusIcon, Trash2Icon } from "lucide-react"
 import { cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
@@ -48,9 +56,65 @@ async function EditPageContent({
           <TabsTrigger value="lessons">Lessons</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
-        <TabsContent value="lessons">Lessons</TabsContent>
+
+        <TabsContent value="lessons">
+          <Card>
+            <CardHeader className="flex items-center flex-row justify-between">
+              <CardTitle>Sections</CardTitle>
+              <SectionFormDialog courseId={courseId}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <PlusIcon /> New section
+                  </Button>
+                </DialogTrigger>
+              </SectionFormDialog>
+            </CardHeader>
+            <CardContent>
+              {course.courseSections.map((section) => (
+                <div key={section.id} className="flex items-center gap-1">
+                  <div
+                    className={cn(
+                      "contents",
+                      section.status === "private" && "text-muted-foreground",
+                    )}
+                  >
+                    {section.status === "private" ? (
+                      <EyeClosedIcon className="size-4" />
+                    ) : (
+                      <EyeIcon className="size-4" />
+                    )}
+                    {section.name}
+                  </div>
+                  <SectionFormDialog courseId={course.id} section={section}>
+                    <div className="ml-auto flex items-center gap-2">
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                      </DialogTrigger>
+                      <ActionButton
+                        action={deleteSection.bind(null, section.id)}
+                        requireAreYouSure
+                        variant="destructive"
+                        size="sm"
+                      >
+                        <Trash2Icon />
+                        <span className="sr-only">Delete</span>
+                      </ActionButton>
+                    </div>
+                  </SectionFormDialog>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="details">
-          <CourseForm course={course} />
+          <Card>
+            <CardHeader>
+              <CourseForm course={course} />
+            </CardHeader>
+          </Card>
         </TabsContent>
       </Tabs>
     </>

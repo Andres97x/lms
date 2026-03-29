@@ -33,3 +33,5 @@ export const courseSectionsRelationships = relations(
     lessons: many(lessonsTable),
   }),
 )
+
+export type CourseSections = typeof courseSectionsTable.$inferInsert

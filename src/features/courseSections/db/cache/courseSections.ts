@@ -22,5 +22,5 @@ export function revalidateCourseSectionsCache({
 }) {
   revalidateTag(getCourseSectionsGlobalTag(), { expire: 0 })
   revalidateTag(getCourseSectionsIdTag(sectionId), { expire: 0 })
-  revalidateTag(getCourseSectionsIdTag(courseId), { expire: 0 })
+  revalidateTag(getCourseSectionsCourseTag(courseId), { expire: 0 })
 }
