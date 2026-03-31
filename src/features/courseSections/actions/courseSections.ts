@@ -12,6 +12,7 @@ import {
   deleteCourseSection,
   getNextCourseSectionOrder,
   insertCourseSection,
+  updateSectionOrders as updateSectionsOrderDB,
 } from "../db/courseSections"
 import { revalidateCourseSectionsCache } from "../db/cache/courseSections"
 import { updateCourseSection } from "../db/courseSections"
@@ -87,4 +88,22 @@ export async function deleteSection(sectionId: string) {
     error: false,
     message: `Section ${deletedSection.name} has been deleted`,
   }
+}
+
+export async function updateSectionsOrder(sectionIds: string[]) {
+  const user = await getCurrentUser()
+
+  if (sectionIds.length === 0 || !canUpdateSection(user))
+    return { error: true, message: "Failed to update sections order" }
+
+  const updatedSections = await updateSectionsOrderDB(sectionIds)
+
+  updatedSections.flat().forEach((section) => {
+    revalidateCourseSectionsCache({
+      sectionId: section.id,
+      courseId: section.courseId,
+    })
+  })
+
+  return { error: false, message: "Successfully reordered your sections" }
 }

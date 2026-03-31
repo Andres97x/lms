@@ -1,4 +1,3 @@
-import { ActionButton } from "@/components/ActionButton"
 import PageHeader from "@/components/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,13 +11,13 @@ import {
 } from "@/drizzle/schema"
 import CourseForm from "@/features/courses/components/CourseForm"
 import { getCourseIdTag } from "@/features/courses/db/cache/courses"
-import { deleteSection } from "@/features/courseSections/actions/courseSections"
 import SectionFormDialog from "@/features/courseSections/components/SectionFormDialog"
+import SortableSectionsList from "@/features/courseSections/components/SortableSectionsList"
 import { getCourseSectionsCourseTag } from "@/features/courseSections/db/cache/courseSections"
 import { getLessonsCourseTag } from "@/features/lessons/db/cache/lessons"
 import { cn } from "@/lib/utils"
 import { asc, eq } from "drizzle-orm"
-import { EyeClosedIcon, EyeIcon, PlusIcon, Trash2Icon } from "lucide-react"
+import { EyeClosed, EyeClosedIcon, EyeIcon, PlusIcon } from "lucide-react"
 import { cacheTag } from "next/cache"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
@@ -61,7 +60,7 @@ async function EditPageContent({
           <Card>
             <CardHeader className="flex items-center flex-row justify-between">
               <CardTitle>Sections</CardTitle>
-              <SectionFormDialog courseId={courseId}>
+              <SectionFormDialog courseId={course.id}>
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <PlusIcon /> New section
@@ -70,43 +69,47 @@ async function EditPageContent({
               </SectionFormDialog>
             </CardHeader>
             <CardContent>
-              {course.courseSections.map((section) => (
-                <div key={section.id} className="flex items-center gap-1">
-                  <div
-                    className={cn(
-                      "contents",
-                      section.status === "private" && "text-muted-foreground",
-                    )}
-                  >
-                    {section.status === "private" ? (
-                      <EyeClosedIcon className="size-4" />
-                    ) : (
-                      <EyeIcon className="size-4" />
-                    )}
-                    {section.name}
-                  </div>
-                  <SectionFormDialog courseId={course.id} section={section}>
-                    <div className="ml-auto flex items-center gap-2">
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
-                      </DialogTrigger>
-                      <ActionButton
-                        action={deleteSection.bind(null, section.id)}
-                        requireAreYouSure
-                        variant="destructive"
-                        size="sm"
-                      >
-                        <Trash2Icon />
-                        <span className="sr-only">Delete</span>
-                      </ActionButton>
-                    </div>
-                  </SectionFormDialog>
-                </div>
-              ))}
+              <SortableSectionsList
+                courseId={course.id}
+                sections={course.courseSections}
+              />
             </CardContent>
           </Card>
+
+          <hr className="my-4" />
+
+          {course.courseSections.map((section) => (
+            <Card key={section.id}>
+              <CardHeader className="flex items-center flex-row justify-between gap-4">
+                <CardTitle
+                  className={cn(
+                    "flex items-center gap-2",
+                    section.status === "private" && "text-muted-foreground",
+                  )}
+                >
+                  {section.status === "private" ? (
+                    <EyeClosedIcon className="text-muted-foreground" />
+                  ) : (
+                    <EyeIcon />
+                  )}
+                  {section.name}
+                </CardTitle>
+                <SectionFormDialog courseId={course.id}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <PlusIcon /> New section
+                    </Button>
+                  </DialogTrigger>
+                </SectionFormDialog>
+              </CardHeader>
+              <CardContent>
+                <SortableSectionsList
+                  courseId={course.id}
+                  sections={course.courseSections}
+                />
+              </CardContent>
+            </Card>
+          ))}
         </TabsContent>
 
         <TabsContent value="details">

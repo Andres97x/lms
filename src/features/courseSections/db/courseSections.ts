@@ -42,3 +42,20 @@ export async function deleteCourseSection(sectionId: string) {
 
   return deletedCourse
 }
+
+export async function updateSectionOrders(sectionIds: string[]) {
+  const sections = await Promise.all(
+    sectionIds.map((id, index) =>
+      db
+        .update(courseSectionsTable)
+        .set({ order: index })
+        .where(eq(courseSectionsTable.id, id))
+        .returning({
+          id: courseSectionsTable.id,
+          courseId: courseSectionsTable.courseId,
+        }),
+    ),
+  )
+
+  return sections
+}
